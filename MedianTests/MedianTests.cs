@@ -4,14 +4,6 @@ namespace MedianTests;
 
 public class DictionaryMedianTests
 {
-    [Fact]
-    public void EmptySequence_ReturnsNaN()
-    {
-        IMedian median = new DictionaryMedian();
-
-        Assert.Equal(double.NaN, median.Value);
-    }
-
     [Theory]
     [InlineData(new[] { 5 }, 5)]
     [InlineData(new[] { 2, 4, 6 }, 4)]

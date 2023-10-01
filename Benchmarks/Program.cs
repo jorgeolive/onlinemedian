@@ -5,7 +5,7 @@ using BenchmarkDotNet.Running;
 public class MedianBenchmark
 {
 
-    [Params(100000)]
+    [Params(1000)]
     public int DataSize = 100;
     private List<int>? data; 
 
@@ -23,7 +23,7 @@ public class MedianBenchmark
     [Benchmark]
     public void ListMedian()
     {
-        var median = new MovingMedian.Logic.ListBasedMedian();
+        var median = new MovingMedian.Logic.ListBasedMedian(true);
 
         foreach(var num in data!)
         {
@@ -52,7 +52,7 @@ public class MedianBenchmark
     [Benchmark]
     public void DictionaryMedian()
     {
-        var median = new MovingMedian.Logic.DictionaryMedian();
+        var median = new MovingMedian.Logic.DictionaryMedian(true);
 
         foreach (var num in data!)
         {

@@ -8,9 +8,11 @@ namespace MovingMedian.Logic
         private readonly SortedDictionary<int, int> _numberCounts;
         private uint _numberOfSamples = 0;
         private double _median = double.NaN;
+        private bool _updateOnAdd = false;
 
-        public DictionaryMedian()
+        public DictionaryMedian(bool? updateOnAdd = null)
         {
+            _updateOnAdd = updateOnAdd ?? false;
             _numberCounts = new();
         }
 
@@ -18,43 +20,47 @@ namespace MovingMedian.Logic
         {
             get
             {
-                var keys = _numberCounts.Keys;
+                CalculateMedian();
+                return _median;
+            }
+        }
 
-                int temporarySum = 0;
-                bool unevenSamples = _numberOfSamples % 2 != 0;
-                var medianPosition = Convert.ToUInt32(Math.Abs(_numberOfSamples / 2)) + 1;
-                int? previousKey = 0;
+        private void CalculateMedian()
+        {
+            var keys = _numberCounts.Keys;
 
-                foreach (var key in keys)
+            int temporarySum = 0;
+            bool unevenSamples = _numberOfSamples % 2 != 0;
+            var medianPosition = Convert.ToUInt32(Math.Abs(_numberOfSamples / 2)) + 1;
+            int? previousKey = 0;
+
+            foreach (var key in keys)
+            {
+                temporarySum += _numberCounts[key];
+
+                if (temporarySum < medianPosition)
                 {
-                    temporarySum += _numberCounts[key];
-
-                    if (temporarySum < medianPosition)
-                    {
-                        previousKey = key;
-                        continue;
-                    }
-                    else if (temporarySum >= medianPosition)
-                    {
-                        if (unevenSamples)
-                        {
-                            _median = key;
-                        }
-                        else
-                        {
-                            _median = previousKey == 0 ? key : (double)(((double)key + (double)previousKey) / 2);
-                        }
-
-                        break;
-                    }
-                    else if (temporarySum > medianPosition)
+                    previousKey = key;
+                    continue;
+                }
+                else if (temporarySum >= medianPosition)
+                {
+                    if (unevenSamples)
                     {
                         _median = key;
-                        break;
                     }
-                }
+                    else
+                    {
+                        _median = previousKey == 0 ? key : (double)(((double)key + (double)previousKey) / 2);
+                    }
 
-                return _median;
+                    break;
+                }
+                else if (temporarySum > medianPosition)
+                {
+                    _median = key;
+                    break;
+                }
             }
         }
 
@@ -69,7 +75,12 @@ namespace MovingMedian.Logic
             else
             {
                 _numberCounts[number] = 1;
-            }       
+            }
+
+            if (this._updateOnAdd)
+            {
+                CalculateMedian();
+            }
         }
     }
 }

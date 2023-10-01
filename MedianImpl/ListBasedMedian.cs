@@ -6,18 +6,25 @@ namespace MovingMedian.Logic
     {
         private List<int> _list;
         private double _median = double.NaN;
+        private bool _updateOnAdd = false;
 
-        public ListBasedMedian()
+        public ListBasedMedian(bool? updateOnAdd = null)
         {
+            _updateOnAdd = updateOnAdd ?? false;
             _list = new();
         }
 
         public void Add(int value)
         {
             _list.Add(value);
+
+            if (this._updateOnAdd)
+            {
+                CalculateMedian();
+            }
         }
         
-        private void UpdateMedian()
+        private void CalculateMedian()
         {
 
             if (_list == null || _list.Count == 0)
@@ -45,7 +52,7 @@ namespace MovingMedian.Logic
         {
             get
             {
-                UpdateMedian();
+                CalculateMedian();
 
                 return _median;
             }
